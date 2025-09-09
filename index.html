@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Math Zombie</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+      /* pequenas melhorias para o canvas dentro do layout existente */
+      .quiz-container { padding: 20px; max-width: 900px; }
+      #gameCanvas { display: block; margin: 0 auto 12px; background: #2b2b2b; border-radius: 8px; }
+      .hud { display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; }
+      .hud p { margin: 0; color:#222; font-weight:600; }
+      #controls { display:flex; gap:8px; margin-top:10px; justify-content:center; }
+      #answer { width:160px; }
+    </style>
+</head>
+<body>
+    <div class="quiz-container">
+        <h1 style="color: black; text-align:center;">Math Zombie</h1>
+
+        <div class="hud">
+            <p id="score">Pontuação: 0</p>
+            <p id="phase">Fase: 1</p>
+            <p id="lives">Vidas: 3</p>
+        </div>
+
+        <!-- CANVAS DO JOGO -->
+        <canvas id="gameCanvas" width="800" height="450"></canvas>
+
+        <!-- Controles -->
+        <div id="controls">
+            <input type="number" id="answer" placeholder="Digite a resposta" />
+            <button id="submit-btn">Atirar</button>
+            <button id="restart-btn" style="display:none">Reiniciar</button>
+        </div>
+
+        <p id="message" style="text-align:center;color:#111;margin-top:12px;"></p>
+        <p style="text-align:center;color:#444;margin-top:8px;font-size:14px;">
+          Dica: digite a resposta e pressione "Atirar" ou Enter — zumbis com a conta correta morrem.
+        </p>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
