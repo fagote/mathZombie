@@ -1,63 +1,84 @@
-// Seletores de elementos da UI
+// =======================
+// Seletores da UI
+// =======================
 const answerInput = document.getElementById("answer");
 const submitButton = document.getElementById("submit-btn");
 const scoreElement = document.getElementById("score");
 const phaseElement = document.getElementById("phase");
 const livesElement = document.getElementById("lives");
+const userModal = document.getElementById("userModal");
+const startBtn = document.getElementById("start-btn");
 
-// Criar canvas dinamicamente
+// Canvas
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
+// Imagens
 const zombieImg = new Image();
 zombieImg.src = "assets/zombie.png";
 
 const cannon = new Image();
-cannon.src = "assests/cannon.png";
+cannon.src = "assets/cannon.png";
 
-const laser = new Image();
-laser.src = "assests/laser.png";
+const laserImg = new Image();
+laserImg.src = "assets/laser.png";
 
-const vida = new Image();
-vida.src = "assests/vida.png";
+const vidaImg = new Image();
+vidaImg.src = "assets/vida.png";
 
-// Constantes do jogador
-const PLAYER_W = 50;
-const PLAYER_H = 50;
-const CANVAS_W = canvas.width;
-const CANVAS_H = canvas.height;
-
-// Sons (adicione arquivos laser.mp3 e explosion.mp3 na mesma pasta)
+// Sons
 const laserSound = new Audio("effects/laser.mp3");
 const explosionSound = new Audio("effects/explosion.mp3");
 
+// =======================
+// Constantes
+// =======================
+const PLAYER_W = 60;
+const PLAYER_H = 60;
+const CANVAS_W = canvas.width;
+const CANVAS_H = canvas.height;
+
+// =======================
 // Estado do jogo
+// =======================
 let score = 0;
-let lives = 3;
+let lives = 5;
 let phase = 1;
 let zombies = [];
 let lasers = [];
 let running = true;
 
-// Elemento de mensagens (feedback ao usuário)
+// Dados do usuário
+let userData = {
+  name: "",
+  age: 0,
+  hits: 0,
+  misses: 0
+};
+
+// Mensagens
 let messageElement = document.createElement("p");
 document.body.appendChild(messageElement);
 
-// Classe Zombie
+updateHUD();
+
+// =======================
+// Classes
+// =======================
 class Zombie {
   constructor(x, y, question, answer) {
     this.x = x;
     this.y = y;
     this.width = 50;
-    this.height = 50;
+    this.height = 70;
     this.question = question;
     this.answer = answer;
-    this.speed = 1 + Math.random() * phase; // mais rápido em fases avançadas
+    this.speed = 1 + Math.random() * phase;
     this._targeted = false;
   }
 
   draw() {
-    ctx.drawImage(zombieImg, this.x, this.y, 50, 70);
+    ctx.drawImage(zombieImg, this.x, this.y, this.width, this.height);
     ctx.fillStyle = "white";
     ctx.font = "16px Arial";
     ctx.fillText(this.question, this.x, this.y - 5);
@@ -68,7 +89,6 @@ class Zombie {
   }
 }
 
-// Classe Laser
 class Laser {
   constructor(startX, startY, targetZombie) {
     this.x = startX;
@@ -86,7 +106,6 @@ class Laser {
 
     const tx = this.target.x + this.target.width / 2;
     const ty = this.target.y + this.target.height / 2;
-
     const dx = tx - this.x;
     const dy = ty - this.y;
     const dist = Math.hypot(dx, dy);
@@ -104,16 +123,26 @@ class Laser {
   }
 
   draw() {
-    ctx.strokeStyle = "rgba(255,40,40,0.95)";
-    ctx.lineWidth = 4;
-    ctx.beginPath();
-    ctx.moveTo(CANVAS_W / 2, CANVAS_H - PLAYER_H / 2 - 2);
-    ctx.lineTo(this.x, this.y);
-    ctx.stroke();
+    if (!this.target) return;
+
+    const tx = this.target.x + this.target.width / 2;
+    const ty = this.target.y + this.target.height / 2;
+    const angle = Math.atan2(ty - this.y, tx - this.x);
+
+    const sizeW = 80;
+    const sizeH = 40;
+
+    ctx.save();
+    ctx.translate(this.x, this.y);
+    ctx.rotate(angle);
+    ctx.drawImage(laserImg, -sizeW / 2, -sizeH / 2, sizeW, sizeH);
+    ctx.restore();
   }
 }
 
-// Gerar questão
+// =======================
+// Funções do jogo
+// =======================
 function generateQuestion() {
   let a = Math.floor(Math.random() * (5 * phase)) + 1;
   let b = Math.floor(Math.random() * (5 * phase)) + 1;
@@ -150,14 +179,12 @@ function generateQuestion() {
   return { question, answer };
 }
 
-// Spawn zumbi
 function spawnZombie() {
   const { question, answer } = generateQuestion();
   const x = Math.random() * (canvas.width - 50);
   zombies.push(new Zombie(x, 0, question, answer));
 }
 
-// Verificar resposta -> cria laser
 function checkAnswer() {
   if (!running) return;
 
@@ -185,29 +212,40 @@ function checkAnswer() {
     target._targeted = true;
 
     const playerX = CANVAS_W / 2;
-    const playerY = CANVAS_H - PLAYER_H / 2 - 2;
+    const playerY = CANVAS_H - PLAYER_H;
 
     lasers.push(new Laser(playerX, playerY, target));
 
     try { laserSound.currentTime = 0; laserSound.play(); } catch (e) {}
     messageElement.textContent = "✅ Laser disparado!";
+
+    userData.hits++; // registrar acerto
   } else {
     messageElement.textContent = "❌ Nenhum zumbi com essa resposta.";
+    userData.misses++; // registrar erro
   }
 
   answerInput.value = "";
   answerInput.focus();
 }
 
-// HUD
 function updateHUD() {
   scoreElement.textContent = `Pontuação: ${score}`;
   phaseElement.textContent = `Fase: ${phase}`;
-  livesElement.textContent = `Vidas: ${lives}`;
+
+  livesElement.innerHTML = "";
+  for (let i = 0; i < lives; i++) {
+    const heart = document.createElement("img");
+    heart.src = "assets/vida.png";
+    heart.width = 24;
+    heart.height = 24;
+    heart.style.marginRight = "5px";
+    livesElement.appendChild(heart);
+  }
 }
 
-// Loop do jogo
 let lastTime = performance.now();
+
 function gameLoop(now) {
   const delta = now - lastTime;
   lastTime = now;
@@ -215,11 +253,9 @@ function gameLoop(now) {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   // Jogador
-  ctx.fillStyle = "blue";
-  ctx.fillRect(CANVAS_W / 2 - PLAYER_W / 2, CANVAS_H - PLAYER_H, PLAYER_W, PLAYER_H);
-  
+  ctx.drawImage(cannon, CANVAS_W / 2 - PLAYER_W / 2, CANVAS_H - PLAYER_H, PLAYER_W, PLAYER_H);
 
-  // Atualizar/desenhar zumbis
+  // Zumbis
   zombies.forEach((zombie, index) => {
     zombie.update();
     zombie.draw();
@@ -228,15 +264,16 @@ function gameLoop(now) {
       lives--;
       updateHUD();
       zombies.splice(index, 1);
+
       if (lives <= 0) {
         running = false;
-        alert("💀 Game Over! Pontuação final: " + score);
+        alert(`💀 Game Over!\nPontuação: ${score}\nNome: ${userData.name}\nIdade: ${userData.age}`);
         document.location.reload();
       }
     }
   });
 
-  // Atualizar/desenhar lasers
+  // Lasers
   for (let i = lasers.length - 1; i >= 0; i--) {
     const l = lasers[i];
     l.update(delta);
@@ -264,12 +301,40 @@ function gameLoop(now) {
   if (running) requestAnimationFrame(gameLoop);
 }
 
+// =======================
 // Eventos
+// =======================
 submitButton.addEventListener("click", checkAnswer);
 answerInput.addEventListener("keypress", (e) => {
   if (e.key === "Enter") checkAnswer();
 });
 
-// Start
-setInterval(spawnZombie, 2500);
-gameLoop(lastTime);
+// =======================
+// Modal de usuário
+// =======================
+startBtn.addEventListener("click", () => {
+  const name = document.getElementById("name").value.trim();
+  const age = parseInt(document.getElementById("age").value);
+
+  if (!name || !age) {
+    alert("Preencha nome e idade!");
+    return;
+  }
+
+  userData.name = name;
+  userData.age = age;
+
+  // Fechar modal
+  userModal.style.display = "none";
+
+  // Mostrar jogo
+  document.getElementById("gameCanvas").style.display = "block";
+  document.getElementById("controls").style.display = "flex";
+  document.querySelector(".hud").style.display = "flex";
+
+  answerInput.focus();
+
+  // iniciar spawn de zumbis e loop
+  setInterval(spawnZombie, 2500);
+  gameLoop(lastTime);
+});
