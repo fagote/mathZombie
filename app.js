@@ -2,6 +2,8 @@
 const answerInput = document.getElementById("answer");
 const submitButton = document.getElementById("submit-btn");
 const scoreElement = document.getElementById("score");
+const phaseElement = document.getElementById("phase");
+const livesElement = document.getElementById("lives");
 
 // Criar canvas dinamicamente
 const canvas = document.getElementById("gameCanvas");
@@ -9,6 +11,15 @@ const ctx = canvas.getContext("2d");
 
 const zombieImg = new Image();
 zombieImg.src = "assets/zombie.png";
+
+const cannon = new Image();
+cannon.src = "assests/cannon.png";
+
+const laser = new Image();
+laser.src = "assests/laser.png";
+
+const vida = new Image();
+vida.src = "assests/vida.png";
 
 // Constantes do jogador
 const PLAYER_W = 50;
@@ -190,7 +201,9 @@ function checkAnswer() {
 
 // HUD
 function updateHUD() {
-  scoreElement.textContent = score;
+  scoreElement.textContent = `Pontuação: ${score}`;
+  phaseElement.textContent = `Fase: ${phase}`;
+  livesElement.textContent = `Vidas: ${lives}`;
 }
 
 // Loop do jogo
@@ -204,6 +217,7 @@ function gameLoop(now) {
   // Jogador
   ctx.fillStyle = "blue";
   ctx.fillRect(CANVAS_W / 2 - PLAYER_W / 2, CANVAS_H - PLAYER_H, PLAYER_W, PLAYER_H);
+  
 
   // Atualizar/desenhar zumbis
   zombies.forEach((zombie, index) => {
@@ -212,6 +226,7 @@ function gameLoop(now) {
 
     if (zombie.y > CANVAS_H - PLAYER_H) {
       lives--;
+      updateHUD();
       zombies.splice(index, 1);
       if (lives <= 0) {
         running = false;
@@ -238,6 +253,7 @@ function gameLoop(now) {
 
         if (score % 10 === 0) {
           phase++;
+          updateHUD();
           messageElement.textContent = `🚀 Você passou para a fase ${phase}!`;
         }
       }
