@@ -277,20 +277,36 @@ function updateHUD() {
   }
 }
 
-function exportCSV() {
+async function exportCSV() {
   if (gameLog.length === 0) return;
 
+  // monta o CSV em memória
   const header = Object.keys(gameLog[0]).join(",") + "\n";
   const rows = gameLog.map(obj => Object.values(obj).join(",")).join("\n");
   const csvContent = header + rows;
 
+  // cria um arquivo virtual para enviar
   const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-  const url = URL.createObjectURL(blob);
+  const formData = new FormData();
+  formData.append("file", blob, `${userData.name}_partida.csv`);
 
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = `${userData.name}_partida.csv`;
-  link.click();
+  try {
+    const response = await fetch("http://127.0.0.1:8000/upload-csv", {
+      method: "POST",
+      body: formData
+    });
+
+    const result = await response.json();
+    console.log("Resposta da API:", result);
+
+    if (response.ok) {
+      alert("Dados enviados para a API!");
+    } else {
+      alert("Erro ao enviar CSV para a API.");
+    }
+  } catch (error) {
+    console.error("Erro de conexão com a API:", error);
+  }
 }
 
 let lastTime = performance.now();
