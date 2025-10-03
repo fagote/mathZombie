@@ -1,5 +1,0 @@
-nome,idade,fase,questao,tipo,resposta_correta,resposta_usuario,resultado,tempo_resposta
-leo,56,1,4 + 4,soma,8,8,certo,3.76
-leo,56,1,1 + 4,soma,5,5,certo,2.48
-leo,56,1,1 + 4,soma,5,5,certo,2.69
-leo,56,1,1 + 4,soma,5,5,certo,2.35
