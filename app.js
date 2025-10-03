@@ -280,13 +280,11 @@ function updateHUD() {
 async function exportCSV() {
   if (gameLog.length === 0) return;
 
-  // monta o CSV em memória
   const header = Object.keys(gameLog[0]).join(",") + "\n";
   const rows = gameLog.map(obj => Object.values(obj).join(",")).join("\n");
   const csvContent = header + rows;
 
-  // cria um arquivo virtual para enviar
-  const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+  const blob = new Blob([csvContent], { type: "text/csv" });
   const formData = new FormData();
   formData.append("file", blob, `${userData.name}_partida.csv`);
 
@@ -296,18 +294,34 @@ async function exportCSV() {
       body: formData
     });
 
-    const result = await response.json();
-    console.log("Resposta da API:", result);
+    console.log("Status:", response.status);
 
+    // Primeiro: checa se a API respondeu OK
     if (response.ok) {
-      alert("Dados enviados para a API!");
+      let resultText;
+      try {
+        const result = await response.json();
+        resultText = JSON.stringify(result, null, 2);
+        console.log("Resposta da API (JSON):", result);
+      } catch (e) {
+        resultText = await response.text(); // pega texto cru caso não seja JSON
+        console.warn("⚠️ Não foi possível parsear JSON. Resposta crua:", resultText);
+      }
+
+      alert("✅ Dados enviados para a API!\n\nResposta: " + resultText);
     } else {
-      alert("Erro ao enviar CSV para a API.");
+      const errorText = await response.text();
+      alert("❌ Erro ao enviar CSV para a API.\n\nDetalhes: " + errorText);
     }
+
   } catch (error) {
-    console.error("Erro de conexão com a API:", error);
+    console.error("Erro na requisição:", error);
+    alert("❌ Não foi possível enviar para a API. Verifique se o servidor está rodando.");
   }
 }
+
+
+
 
 let lastTime = performance.now();
 
