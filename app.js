@@ -305,18 +305,18 @@ async function exportCSV() {
         console.log("Resposta da API (JSON):", result);
       } catch (e) {
         resultText = await response.text(); // pega texto cru caso não seja JSON
-        console.warn("⚠️ Não foi possível parsear JSON. Resposta crua:", resultText);
+        console.warn("Não foi possível parsear JSON. Resposta crua:", resultText);
       }
 
-      alert("✅ Dados enviados para a API!\n\nResposta: " + resultText);
+      alert("Dados enviados para a API!\n\nResposta: " + resultText);
     } else {
       const errorText = await response.text();
-      alert("❌ Erro ao enviar CSV para a API.\n\nDetalhes: " + errorText);
+      alert("Erro ao enviar CSV para a API.\n\nDetalhes: " + errorText);
     }
 
   } catch (error) {
     console.error("Erro na requisição:", error);
-    alert("❌ Não foi possível enviar para a API. Verifique se o servidor está rodando.");
+    alert("Não foi possível enviar para a API. Verifique se o servidor está rodando.");
   }
 }
 
