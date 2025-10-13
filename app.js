@@ -249,6 +249,7 @@ function checkAnswer() {
   gameLog.push({
     nome: userData.name,
     idade: userData.age,
+    email:userData.email,
     fase: phase,
     questao: questao,
     tipo: tipo,
@@ -294,30 +295,35 @@ async function exportCSV() {
       body: formData
     });
 
-    console.log("Status:", response.status);
+    console.log("Status da resposta:", response.status);
 
-    // Primeiro: checa se a API respondeu OK
-    if (response.ok) {
-      let resultText;
-      try {
-        const result = await response.json();
-        resultText = JSON.stringify(result, null, 2);
-        console.log("Resposta da API (JSON):", result);
-      } catch (e) {
-        resultText = await response.text(); // pega texto cru caso não seja JSON
-        console.warn("Não foi possível parsear JSON. Resposta crua:", resultText);
-      }
-
-      alert("Dados enviados para a API!\n\nResposta: " + resultText);
-    } else {
+    // Primeiro, verifica se o servidor respondeu com sucesso (200–299)
+    if (!response.ok) {
       const errorText = await response.text();
+      console.error("Erro HTTP:", errorText);
       alert("Erro ao enviar CSV para a API.\n\nDetalhes: " + errorText);
+      return;
     }
 
+    // Tenta ler o corpo da resposta
+    let resultText = "";
+    try {
+      const result = await response.json();
+      console.log("Resposta da API (JSON):", result);
+      resultText = JSON.stringify(result, null, 2);
+    } catch (e) {
+      // Se não for JSON, tenta ler como texto simples
+      resultText = await response.text();
+      console.warn("Resposta não é JSON. Texto cru:", resultText);
+    }
+
+    // Se chegou aqui, deu tudo certo!
+    alert("Dados enviados com sucesso para a API!\n\n" + resultText);
   } catch (error) {
     console.error("Erro na requisição:", error);
-    alert("Não foi possível enviar para a API. Verifique se o servidor está rodando.");
+    alert("Falha ao conectar-se com a API. Verifique se ela está rodando.");
   }
+
 }
 
 
@@ -392,14 +398,16 @@ answerInput.addEventListener("keypress", (e) => {
 startBtn.addEventListener("click", () => {
   const name = document.getElementById("name").value.trim();
   const age = parseInt(document.getElementById("age").value);
+  const email = document.getElementById("email").value.trim();
 
-  if (!name || !age) {
-    alert("Preencha nome e idade!");
+  if (!name || !age || !email) {
+    alert("Preencha nome, idade e o E-mail de seu professor!");
     return;
   }
 
   userData.name = name;
   userData.age = age;
+  userData.email = email;
 
   userModal.style.display = "none";
   document.getElementById("gameCanvas").style.display = "block";
@@ -408,7 +416,7 @@ startBtn.addEventListener("click", () => {
 
   answerInput.focus();
 
-  // 🔥 resetar tempo de resposta quando o jogo começar
+
   lastAnswerTime = Date.now();
 
   setInterval(spawnZombie, 2500);
