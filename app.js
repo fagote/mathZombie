@@ -290,7 +290,7 @@ async function exportCSV() {
   formData.append("file", blob, `${userData.name}_partida.csv`);
 
   try {
-    const response = await fetch("http://127.0.0.1:8000/upload-csv", {
+    const response = await fetch("https://mathzombie-api-production.up.railway.app/upload-csv", {
       method: "POST",
       body: formData
     });
