@@ -289,7 +289,7 @@ async function exportCSV() {
   const formData = new FormData();
   formData.append("file", blob, `${userData.name}_partida.csv`);
 
-  try {
+  
     const response = await fetch("https://mathzombie-api-production-0f8d.up.railway.app/upload-csv", {
       method: "POST",
       body: formData
@@ -319,10 +319,7 @@ async function exportCSV() {
 
     // Se chegou aqui, deu tudo certo!
     alert("Dados enviados com sucesso para a API!\n\n" + resultText);
-  } catch (error) {
-    console.error("Erro na requisição:", error);
-    alert("Falha ao conectar-se com a API. Verifique se ela está rodando.");
-  }
+  
 
 }
 
