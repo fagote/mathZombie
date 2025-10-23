@@ -289,6 +289,9 @@ async function exportCSV() {
   const formData = new FormData();
   formData.append("file", blob, `${userData.name}_partida.csv`);
 
+  //http://127.0.0.1:8000/upload-csv
+  //https://mathzombie-api-production-0f8d.up.railway.app/upload-csv
+  
   
     const response = await fetch("https://mathzombie-api-production-0f8d.up.railway.app/upload-csv", {
       method: "POST",
@@ -346,10 +349,13 @@ function gameLoop(now) {
       zombies.splice(index, 1);
 
       if (lives <= 0) {
+
         running = false;
         alert(`💀 Game Over!\nPontuação: ${score}\nNome: ${userData.name}\nIdade: ${userData.age}`);
-        exportCSV();
-        document.location.reload();
+
+        exportCSV().then(() => {
+          document.location.reload();
+        });
       }
     }
   });
