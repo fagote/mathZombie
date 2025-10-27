@@ -29,6 +29,7 @@ vidaImg.src = "assets/vida.png";
 // Sons
 const laserSound = new Audio("effects/laser.mp3");
 const explosionSound = new Audio("effects/explosion.mp3");
+const round1 = new Audio("effects/round1.mp3");
 const round2 = new Audio("effects/round2.mp3");
 const round3 = new Audio("effects/round3.mp3");
 
@@ -443,5 +444,6 @@ startBtn.addEventListener("click", () => {
 
   setInterval(spawnZombie, 2500);
   gameLoop(lastTime);
+  try { round1.currentTime = 0; round1.play(); } catch (e) {}
 });
 
