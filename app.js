@@ -48,6 +48,8 @@ let zombies = [];
 let lasers = [];
 let running = true;
 
+
+
 // Dados do usuário
 let userData = {
   name: "",
@@ -229,6 +231,11 @@ function checkAnswer() {
     }
   }
 
+  messageElement.style.color = "black";          
+  messageElement.style.fontSize = "23px";       
+  messageElement.style.fontWeight = "bold";     
+  messageElement.style.textShadow = "2px 2px 6px black";
+  
   if (bestIdx !== -1) {
     const target = zombies[bestIdx];
     target._targeted = true;
@@ -239,6 +246,8 @@ function checkAnswer() {
 
     try { laserSound.currentTime = 0; laserSound.play(); } catch (e) {}
     messageElement.textContent = "✅ Laser disparado!";
+    
+
     userData.hits++;
     resultado = "certo";
   } else {
@@ -373,6 +382,7 @@ function gameLoop(now) {
         score++;
         updateHUD();
         messageElement.textContent = "💥 Zumbi destruído!";
+        
 
         if (score % 10 === 0) {
           phase++;
