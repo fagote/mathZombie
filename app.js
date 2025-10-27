@@ -29,6 +29,8 @@ vidaImg.src = "assets/vida.png";
 // Sons
 const laserSound = new Audio("effects/laser.mp3");
 const explosionSound = new Audio("effects/explosion.mp3");
+const round2 = new Audio("effects/round2.mp3");
+const round3 = new Audio("effects/round3.mp3");
 
 // =======================
 // Constantes
@@ -235,7 +237,7 @@ function checkAnswer() {
   messageElement.style.fontSize = "23px";       
   messageElement.style.fontWeight = "bold";     
   messageElement.style.textShadow = "2px 2px 6px black";
-  
+
   if (bestIdx !== -1) {
     const target = zombies[bestIdx];
     target._targeted = true;
@@ -387,7 +389,14 @@ function gameLoop(now) {
         if (score % 10 === 0) {
           phase++;
           updateHUD();
-          messageElement.textContent = `🚀 Você passou para a fase ${phase}!`;
+          if(phase === 2){
+            try { round2.currentTime = 0; round2.play(); } catch (e) {}
+            messageElement.textContent = `🚀 Você passou para a fase ${phase}!`;
+          } else if(phase === 3){
+              try { round3.currentTime = 0; round3.play(); } catch (e) {}
+              messageElement.textContent = `🚀 Você passou para a fase ${phase}!`;
+          }
+          
         }
       }
       lasers.splice(i, 1);
