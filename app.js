@@ -321,7 +321,7 @@ async function exportCSV() {
     }
 
     // Se chegou aqui, deu tudo certo!
-    alert("Dados enviados com sucesso para a API!\n\n" + resultText);
+    alert("Dados enviados com sucesso para a API!\n");
   
 
 }
