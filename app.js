@@ -32,6 +32,7 @@ const explosionSound = new Audio("effects/explosion.mp3");
 const round1 = new Audio("effects/round1.mp3");
 const round2 = new Audio("effects/round2.mp3");
 const round3 = new Audio("effects/round3.mp3");
+const error = new Audio("effects/error.wav");
 
 // =======================
 // Constantes
@@ -254,6 +255,7 @@ function checkAnswer() {
     userData.hits++;
     resultado = "certo";
   } else {
+    try { error.currentTime = 0; error.play(); } catch (e) {}
     messageElement.textContent = "❌ Nenhum zumbi com essa resposta.";
     userData.misses++;
   }
