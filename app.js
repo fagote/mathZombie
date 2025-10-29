@@ -33,6 +33,9 @@ const round1 = new Audio("effects/round1.mp3");
 const round2 = new Audio("effects/round2.mp3");
 const round3 = new Audio("effects/round3.mp3");
 const error = new Audio("effects/error.wav");
+const phase1 = new Audio("effects/phase1.mp3");
+const phase2 = new Audio("effects/phase2.mp3");
+const phase3 = new Audio("effects/phase3.mp3");
 
 // =======================
 // Constantes
@@ -363,7 +366,7 @@ function gameLoop(now) {
       zombies.splice(index, 1);
 
       if (lives <= 0) {
-
+        stopAllPhasesMusic();
         running = false;
         alert(`💀 Game Over!\nPontuação: ${score}\nNome: ${userData.name}\nIdade: ${userData.age}`);
 
@@ -388,16 +391,21 @@ function gameLoop(now) {
         updateHUD();
         messageElement.textContent = "💥 Zumbi destruído!";
         
-
+        
+        
         if (score % 10 === 0) {
           phase++;
           updateHUD();
           if(phase === 2){
+            stopAllPhasesMusic();
             try { round2.currentTime = 0; round2.play(); } catch (e) {}
             messageElement.textContent = `🚀 Você passou para a fase ${phase}!`;
+            try { phase2.currentTime = 0; phase2.play(); } catch (e) {}
           } else if(phase === 3){
+              stopAllPhasesMusic();
               try { round3.currentTime = 0; round3.play(); } catch (e) {}
               messageElement.textContent = `🚀 Você passou para a fase ${phase}!`;
+              try { phase3.currentTime = 0; phase3.play(); } catch (e) {}
           }
           
         }
@@ -407,6 +415,19 @@ function gameLoop(now) {
   }
 
   if (running) requestAnimationFrame(gameLoop);
+}
+
+function stopAllPhasesMusic() {
+  try {
+    phase1.pause();
+    phase1.currentTime = 0;
+    phase2.pause();
+    phase2.currentTime = 0;
+    phase3.pause();
+    phase3.currentTime = 0;
+  } catch (e) {
+    console.error("Erro ao parar músicas:", e);
+  }
 }
 
 // =======================
@@ -447,5 +468,9 @@ startBtn.addEventListener("click", () => {
   setInterval(spawnZombie, 2500);
   gameLoop(lastTime);
   try { round1.currentTime = 0; round1.play(); } catch (e) {}
+
+  if(phase === 1){
+    try { phase1.play(); } catch (e) {}
+  }
 });
 
