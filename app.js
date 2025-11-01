@@ -54,7 +54,7 @@ const CANVAS_H = canvas.height;
 // =======================
 let score = 0;
 let lives = 5;
-let phase = 3;
+let phase = 1;
 let zombies = [];
 let lasers = [];
 let running = true;
