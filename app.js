@@ -29,13 +29,17 @@ vidaImg.src = "assets/vida.png";
 // Sons
 const laserSound = new Audio("effects/laser.mp3");
 const explosionSound = new Audio("effects/explosion.mp3");
-const round1 = new Audio("effects/round1.mp3");
-const round2 = new Audio("effects/round2.mp3");
-const round3 = new Audio("effects/round3.mp3");
+const round1 = new Audio("effects/rounds/round1.mp3");
+const round2 = new Audio("effects/rounds/round2.mp3");
+const round3 = new Audio("effects/rounds/round3.mp3");
+const round4 = new Audio("effects/rounds/round4.mp3");
+const round5 = new Audio("effects/rounds/round5.mp3");
+const round6 = new Audio("effects/rounds/round6.mp3");
+const round7 = new Audio("effects/rounds/round7.mp3");
 const error = new Audio("effects/error.wav");
-const phase1 = new Audio("effects/phase1.mp3");
-const phase2 = new Audio("effects/phase2.mp3");
-const phase3 = new Audio("effects/phase3.mp3");
+const phase1 = new Audio("effects/phases/phase1.mp3");
+const phase2 = new Audio("effects/phases/phase2.mp3");
+const phase3 = new Audio("effects/phases/phase3.mp3");
 
 // =======================
 // Constantes
@@ -50,7 +54,7 @@ const CANVAS_H = canvas.height;
 // =======================
 let score = 0;
 let lives = 5;
-let phase = 1;
+let phase = 3;
 let zombies = [];
 let lasers = [];
 let running = true;
@@ -178,24 +182,63 @@ function generateQuestion() {
       type = "subtracao";
     }
   } else if (phase === 3) {
-    question = `${a} × ${b}`;
-    answer = a * b;
-    type = "multiplicacao";
-  } else {
-    const op = ["+", "-", "×"][Math.floor(Math.random() * 3)];
-    if (op === "+") {
+    
+    a = Math.floor(Math.random() * 6) + 1;
+    b = Math.floor(Math.random() * 6) + 1;
+
+    const r = Math.random();
+
+    if (r < 0.15) { 
       question = `${a} + ${b}`;
       answer = a + b;
       type = "soma";
-    } else if (op === "-") {
+
+    } else if (r < 0.30) { 
       question = `${a} - ${b}`;
       answer = a - b;
       type = "subtracao";
-    } else {
+
+    } else { 
       question = `${a} × ${b}`;
       answer = a * b;
       type = "multiplicacao";
     }
+  } else if (phase === 4){
+    const result = Math.floor(Math.random() * 6) + 1;
+    b = Math.floor(Math.random() * 6) + 1;
+    a = result * b;
+
+    question = `${a} ÷ ${b}`;
+    answer = result;
+    type = "divisao";
+  } else if (phase === 5){
+      question = `${a} + ${b}`;
+      answer = a + b;
+      type = "adicao";
+  } else if (phase === 6){
+      question = `${a} - ${b}`;
+      answer = a - b;
+      type = "subtracao";
+  }else if (phase === 7){
+      const r = Math.random();
+
+      if(r < 0.50){
+        const result = Math.floor(Math.random() * 6) + 1;
+        b = Math.floor(Math.random() * 6) + 1;
+        a = result * b;
+
+        question = `${a} ÷ ${b}`;
+        answer = a / b;
+        type = "divisao";
+      } else {
+
+          a = Math.floor(Math.random() * 6) + 1;
+          b = Math.floor(Math.random() * 6) + 1;
+          question = `${a} x ${b}`;
+          answer = a * b;
+          type = "multiplicacao";
+      }
+      
   }
 
   return { question, answer, type };
@@ -391,9 +434,7 @@ function gameLoop(now) {
         updateHUD();
         messageElement.textContent = "💥 Zumbi destruído!";
         
-        
-        
-        if (score % 10 === 0) {
+        if (score % 15 === 0) {
           phase++;
           updateHUD();
           if(phase === 2){
@@ -404,6 +445,26 @@ function gameLoop(now) {
           } else if(phase === 3){
               stopAllPhasesMusic();
               try { round3.currentTime = 0; round3.play(); } catch (e) {}
+              messageElement.textContent = `🚀 Você passou para a fase ${phase}!`;
+              try { phase3.currentTime = 0; phase3.play(); } catch (e) {}
+          } else if(phase === 4){
+              stopAllPhasesMusic();
+              try { round4.currentTime = 0; round4.play(); } catch (e) {}
+              messageElement.textContent = `🚀 Você passou para a fase ${phase}!`;
+              try { phase3.currentTime = 0; phase3.play(); } catch (e) {}
+          } else if(phase === 5){
+              stopAllPhasesMusic();
+              try { round5.currentTime = 0; round5.play(); } catch (e) {}
+              messageElement.textContent = `🚀 Você passou para a fase ${phase}!`;
+              try { phase3.currentTime = 0; phase3.play(); } catch (e) {}
+          } else if(phase === 6){
+              stopAllPhasesMusic();
+              try { round6.currentTime = 0; round6.play(); } catch (e) {}
+              messageElement.textContent = `🚀 Você passou para a fase ${phase}!`;
+              try { phase3.currentTime = 0; phase3.play(); } catch (e) {}
+          } else if(phase === 7){
+              stopAllPhasesMusic();
+              try { round7.currentTime = 0; round7.play(); } catch (e) {}
               messageElement.textContent = `🚀 Você passou para a fase ${phase}!`;
               try { phase3.currentTime = 0; phase3.play(); } catch (e) {}
           }
